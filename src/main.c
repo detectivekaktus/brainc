@@ -61,7 +61,6 @@ int main(int argc, char **argv)
       fprintf(stderr, "INTERNAL ERROR: Couldn't read the file %s.", arg);
       return 1;
     }
-    free(source);
   }
   else {
     fprintf(stderr, "ERROR: unknown command %s.\n", arg);

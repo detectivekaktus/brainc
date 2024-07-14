@@ -1,16 +1,17 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -ggdb -std=c99 -fsanitize=undefined
-TARGETS = build/main.o
-SOURCE = src/main.c
 BUILD_DIR = build
 
+CC = gcc
+CFLAGS = -Wall -Wextra -pedantic -ggdb -std=c99 -fsanitize=undefined
+TARGETS = $(BUILD_DIR)/main.o $(BUILD_DIR)/lexer.o $(BUILD_DIR)/interpreter.o
+SOURCE = src/main.c src/lexer.c src/interpreter.c
+
 all: $(BUILD_DIR) $(TARGETS)
-	$(CC) $(CFLAGS) -o build/brainc $(TARGETS)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/brainc $(TARGETS)
 
 $(BUILD_DIR):
 	mkdir $@
 
-build/%.o: src/%.c
+$(BUILD_DIR)/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
