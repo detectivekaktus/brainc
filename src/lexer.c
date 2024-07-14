@@ -1,5 +1,5 @@
 #include "lexer.h"
-#include <stdio.h>
+#include "brainc.h"
 
 bool is_valid_command(char c)
 {
@@ -8,8 +8,9 @@ bool is_valid_command(char c)
 
 char lexer_next(Lexer *lexer)
 {
-  while (!is_valid_command((lexer->content[lexer->index++]))) {}
-  return lexer->content[--lexer->index];
+  while (!is_valid_command((lexer->content[lexer->index])))
+    lexer->index++;
+  return lexer->content[lexer->index++];
 }
 
 Instructions *translate_program(char *source)
@@ -19,9 +20,10 @@ Instructions *translate_program(char *source)
     .index=0
   };
   Instructions *ins = da_heap_alloc(Instructions);
+  Addresses addrs = {0};
 
-  int c;
-  while ((c = lexer_next(&lexer)) != '\0') {
+  char c = lexer_next(&lexer);
+  while (c != '\0') {
     switch (c) {
       case '+':
       case '-':
@@ -29,24 +31,57 @@ Instructions *translate_program(char *source)
       case '>':
       case '.':
       case ',': {
-        lexer.index++;
+        int value = 1;
+        char n = lexer_next(&lexer);
+        while (c == n) {
+          n = lexer_next(&lexer);
+          value++;
+        }
+        Instruction in = {
+          .kind=c,
+          .value=value
+        };
+        da_append(ins, in);
+        c = n;
       } break;
 
       case '[': {
-        lexer.index++;
+        Instruction in = {
+          .kind=c,
+          .value=0
+        };
+        da_append(&addrs, ins->size + 1);
+        da_append(ins, in);
+        c = lexer_next(&lexer);
       } break;
 
       case ']': {
-        assert(0 && "] is not implemented\n");
-        lexer.index++;
+        if (addrs.size == 0) {
+          fprintf(stderr, "SYNTAX ERROR: ] doesn't have a closing pair.\n");
+          exit(1);
+        }
+        size_t address = addrs.items[addrs.size - 1];
+        Instruction in = {
+          .kind=c,
+          .value=address
+        };
+        ins->items[address - 1].value = ins->size + 1;
+        addrs.size--;
+        da_append(ins, in);
+        c = lexer_next(&lexer);
       } break;
 
       default: {
-        fprintf(stderr, "INTERNAL ERROR: Met an unexpected token %c during the intermediate representation convertion.\n", c);
+        fprintf(stderr, "INTERNAL ERROR: Met unexpected token %c during the intermediate representation convertion.\n", c);
         exit(1);
       } break;
     }
   }
+  Instruction eofin = {
+    .kind = END_OF_FILE,
+    .value = 0
+  };
+  da_append(ins, eofin);
   free(source);
   return ins;
 }

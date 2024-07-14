@@ -33,7 +33,7 @@ char *read_entire_file(char *filename) {
 void usage(char *name)
 {
   printf("usage: %s <filename.bf> | -i <filename.bf>\n", name);
-  printf("  -i: use interpretation only mode to execute the program.\n");
+  printf("  -i | --interpret: use interpretation only mode to execute the program.\n");
 }
 
 int main(int argc, char **argv)
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     arg = next_arg(&args);
     char *source = read_entire_file(arg);
     if (source == NULL) {
-      fprintf(stderr, "INTERNAL ERROR: Couldn't read the file %s.", arg);
+      fprintf(stderr, "INTERNAL ERROR: Couldn't read the file %s.\n", arg);
       return 1;
     }
     Instructions *ins = translate_program(source);

@@ -11,7 +11,8 @@ typedef enum {
   SHIFT_RIGHT = '>',
   SHIFT_LEFT  = '<',
   IF_ZERO     = '[',
-  IF_NZERO    = ']'
+  IF_NZERO    = ']',
+  END_OF_FILE
 } Instruction_Kind;
 
 typedef struct {
@@ -24,6 +25,12 @@ typedef struct {
   size_t size;
   size_t capacity;
 } Instructions;
+
+typedef struct {
+  size_t *items;
+  size_t size;
+  size_t capacity;
+} Addresses;
 
 typedef struct {
   char *content;
