@@ -4,14 +4,14 @@
 #include "brainc.h"
 
 typedef enum {
-  INCREMENT,
-  DECREMENT,
-  OUTPUT,
-  INPUT,
-  SHIFT_RIGHT,
-  SHIFT_LEFT,
-  IF_ZERO,
-  IF_NZERO
+  INCREMENT   = '+',
+  DECREMENT   = '-',
+  OUTPUT      = '.',
+  INPUT       = ',',
+  SHIFT_RIGHT = '>',
+  SHIFT_LEFT  = '<',
+  IF_ZERO     = '[',
+  IF_NZERO    = ']'
 } Instruction_Kind;
 
 typedef struct {

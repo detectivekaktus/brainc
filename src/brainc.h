@@ -9,6 +9,8 @@
 
 #define DA_INIT_CAPACITY 64
 
+#define da_heap_alloc(type) (type *)calloc(1, sizeof(type));
+
 #define da_append(da, item)                                                         \
   do {                                                                              \
     if ((da)->size >= (da)->capacity) {                                             \
@@ -18,6 +20,6 @@
     (da)->items[(da)->size++] = (item);                                             \
   } while (0)
 
-#define da_free(da) free(da.items)
+#define da_free(da) free(da->items);
 
 #endif

@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define SOURCE_CODE_BUFFER_SIZE 4096
+#include "brainc.h"
+#include "lexer.h"
 
 typedef struct {
   int argc;
@@ -61,6 +58,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "INTERNAL ERROR: Couldn't read the file %s.", arg);
       return 1;
     }
+    Instructions *ins = translate_program(source);
   }
   else {
     fprintf(stderr, "ERROR: unknown command %s.\n", arg);
