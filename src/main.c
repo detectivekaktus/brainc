@@ -1,4 +1,5 @@
 #include "brainc.h"
+#include "interpreter.h"
 #include "lexer.h"
 
 typedef struct {
@@ -59,6 +60,8 @@ int main(int argc, char **argv)
       return 1;
     }
     Instructions *ins = translate_program(source);
+    int exit_code = interpret(ins);
+    exit(exit_code);
   }
   else {
     fprintf(stderr, "ERROR: unknown command %s.\n", arg);
