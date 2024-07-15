@@ -38,7 +38,10 @@ int interpret(Instructions *ins)
       } break;
 
       case INPUT: {
-        assert(0 && "Input is not set up for interpretation.\n");
+        for (int i = 0; i < in.value; i++) {
+          bytesarr->bytes[bytesarr->pos] = fgetc(stdin);
+        }
+        in = ins->items[++ip];
       } break;
 
       case OUTPUT: {
