@@ -13,11 +13,11 @@ You will find yourself with a new directory called `build` in the project's root
 
 ## Usage
 The toolset has the following flags:
-| Flag | Description |
-| ---- | ----------- |
-| `-i` or `--interpret` | Interprets the source `.bf` file |
+| Flag     | Description |
+| -------- | ----------- |
+| `-i` `--interpret` | Interprets the source `.bf` file |
 | `-c` `--compile` | Compiles the source `.bf` file down to ELF64 executable |
-| `-o` | Used with `-c` flag. Compiles the source `.bf` file down to ELF64 executable with a specified name |
+| `-o` `--output` | Used with `-c` flag. Compiles the source `.bf` file down to ELF64 executable with a specified name |
 
 ## Contribution
 Make sure to read the [CONTRIBUTING.md](https://github.com/detectivekaktus/brainc/blob/master/CONTRIBUTING.md) file before making pull requests to this repository.
