@@ -6,9 +6,6 @@
 
 #define MAX_BYTES 1024
 
-#define INTERPRETATION_SUCCESS 0
-#define INTERPRETATION_FAIL    1
-
 typedef struct {
   char *bytes;
   int pos;

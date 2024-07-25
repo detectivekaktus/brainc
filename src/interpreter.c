@@ -1,5 +1,4 @@
 #include "interpreter.h"
-#include "lexer.h"
 
 Bytes_Array *init_bytes()
 {
@@ -58,7 +57,7 @@ int interpret(Instructions *ins)
         bytesarr->pos += in.value;
         if (bytesarr->pos >= MAX_BYTES) {
           fprintf(stderr, "RUNTIME ERROR: Bytes overflow. Reached the right bytes limit %d.\n", MAX_BYTES);
-          return INTERPRETATION_FAIL;
+          return FAIL;
         }
         in = ins->items[++ip];
       } break;
@@ -67,7 +66,7 @@ int interpret(Instructions *ins)
         bytesarr->pos -= in.value;
         if (bytesarr->pos < 0) {
           fprintf(stderr, "RUNTIME ERROR: Bytes underflow. Can't shift left from position 0.\n");
-          return INTERPRETATION_FAIL;
+          return FAIL;
         }
         in = ins->items[++ip];
       } break;
@@ -94,10 +93,10 @@ int interpret(Instructions *ins)
 
       default: {
         fprintf(stderr, "Reached the unrechable end of interpretation.\n");
-        return INTERPRETATION_FAIL;
+        return FAIL;
       } break;
     }
   }
   destroy_interpreter_memory(bytesarr, ins);
-  return INTERPRETATION_SUCCESS;
+  return SUCCESS;
 }
