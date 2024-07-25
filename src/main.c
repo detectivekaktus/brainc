@@ -60,8 +60,7 @@ int main(int argc, char **argv)
       return 1;
     }
     Instructions *ins = translate_program(source);
-    int exit_code = interpret(ins);
-    exit(exit_code);
+    exit(interpret(ins));
   }
   else {
     fprintf(stderr, "ERROR: unknown command %s.\n", arg);

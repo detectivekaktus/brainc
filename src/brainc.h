@@ -22,4 +22,10 @@
 
 #define da_free(da) free(da->items);
 
+#define da_heap_free(da)                                                            \
+  do {                                                                              \
+    free((da)->items);                                                              \
+    free(da);                                                                       \
+  } while (0)
+
 #endif

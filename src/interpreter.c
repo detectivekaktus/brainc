@@ -1,22 +1,25 @@
 #include "interpreter.h"
 #include "lexer.h"
 
-Bytes_Array *init_bytes() {
+Bytes_Array *init_bytes()
+{
   Bytes_Array *bytesarr = malloc(sizeof(Bytes_Array));
   bytesarr->bytes = calloc(MAX_BYTES, sizeof(char));
   bytesarr->pos = 0;
   return bytesarr;
 }
 
-void destroy_bytes(Bytes_Array *bytesarr) {
+void destroy_bytes(Bytes_Array *bytesarr)
+{
   free(bytesarr->bytes);
   free(bytesarr);
   bytesarr = NULL;
 }
 
-void destroy_interpreter_memory(Bytes_Array *bytesarr, Instructions *ins) {
+void destroy_interpreter_memory(Bytes_Array *bytesarr, Instructions *ins)
+{
   destroy_bytes(bytesarr);
-  da_free(ins);
+  da_heap_free(ins);
   ins = NULL;
 }
 
