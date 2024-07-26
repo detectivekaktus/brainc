@@ -4,7 +4,7 @@
 #include "brainc.h"
 #include "lexer.h"
 
-void generate_assembly(FILE *f, Instructions *ins);
+bool generate_assembly(FILE *f, Instructions *ins);
 bool compile_assembly(const char *output_name);
 int compile(Instructions *ins, const char *output_name);
 

@@ -4,7 +4,6 @@
 #include "brainc.h"
 #include "lexer.h"
 
-#define MAX_BYTES 1024
 
 typedef struct {
   char *bytes;

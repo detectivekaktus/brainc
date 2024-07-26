@@ -1,15 +1,112 @@
 #include "compiler.h"
 
-void generate_assembly(FILE *f, Instructions *ins)
+bool generate_assembly(FILE *f, Instructions *ins)
 {
   fprintf(f, "section .data\n");
-  fprintf(f, "  runterr db \"RUNTIME ERROR.\",10\n");
-  
+  fprintf(f, "  bytesarr times %d db 0\n", MAX_BYTES);
+  fprintf(f, "  pos dd 0\n");
+
   fprintf(f, "section .text\n");
-  fprintf(f, "  extern calloc\n");
   fprintf(f, "  global _start\n");
 
   fprintf(f, "_start:\n");
+  int ip = 0;
+  int bytesarr_pos = 0;
+  Instruction in = ins->items[ip];
+  while (in.kind != END_OF_FILE) {
+    switch (in.kind) {
+      case INCREMENT: {
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  add byte [bytesarr + ebx], %d\n", in.value);
+        in = ins->items[++ip];
+      } break;
+
+      case DECREMENT: {
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  sub byte [bytesarr + ebx], %d", in.value);
+        in = ins->items[++ip];
+      } break;
+
+      case INPUT: {
+        assert(0 && "Input compilation is not implemented.\n");
+        in = ins->items[++ip];
+      } break;
+
+      case OUTPUT: {
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        for (int i = 0; i < in.value; i++) {
+          fprintf(f, "  mov rax, 1\n");
+          fprintf(f, "  mov rdi, 1\n");
+          fprintf(f, "  lea rsi, [bytesarr + ebx]\n");
+          fprintf(f, "  mov rdx, 1\n");
+          fprintf(f, "  syscall\n");
+        }
+        in = ins->items[++ip];
+      } break;
+
+      case SHIFT_RIGHT: {
+        bytesarr_pos += in.value;
+        if (bytesarr_pos >= MAX_BYTES) {
+          fprintf(stderr, "COMPILATION ERROR: Bytes overflow. Reached the right bytes limit %d.\n", MAX_BYTES);
+          return false;
+        }
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  add ebx, %d\n", in.value);
+        fprintf(f, "  mov [pos], ebx\n");
+        in = ins->items[++ip];
+      } break;
+
+      case SHIFT_LEFT: {
+        bytesarr_pos -= in.value;
+        if (bytesarr_pos < 0) {
+          fprintf(stderr, "COMPILATION ERROR: Bytes underflow. Can't shift left from position 0.\n");
+          return false;
+        }
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  sub ebx, %d\n", in.value);
+        fprintf(f, "  mov [pos], ebx\n");
+        in = ins->items[++ip];
+      } break;
+
+      case IF_ZERO: {
+        assert(0 && "If zero `[` compilation is not implemented.\n");
+        in = ins->items[++ip];
+      } break;
+
+     case IF_NZERO: {
+        assert(0 && "If non zero `]` compilation is not implemented.\n");
+        in = ins->items[++ip];
+      } break;
+
+      default: {
+        fprintf(stderr, "Reached the unreachable end of compilation.\n");
+        return false;
+      } break;
+    }
+  }
+  fprintf(f, "  mov rax, 60\n");
+  fprintf(f, "  mov rdi, 0\n");
+  fprintf(f, "  syscall\n");
+  return true;
+}
+
+bool compile_assembly(const char *output_name)
+{
+  if (system("nasm -f ELF64 -g genasm.asm -o genasm.o") != 0) {
+    fprintf(stderr, "COMPILATION ERROR: couldn't produce the object file.\n");
+    return false;
+  }
+  if (strlen(output_name) > 1000) {
+    fprintf(stderr, "COMPILATION ERROR: output filename length cannot be bigger than 1000.\n");
+    return false;
+  }
+  char ld[MAX_OUTPUT_FILENAME];
+  sprintf(ld, "ld genasm.o -o %s", output_name);
+  if (system(ld) != 0) {
+    fprintf(stderr, "COMPILATION ERROR: couldn't link the object file.\n");
+    return false;
+  }
+  return true;
 }
 
 int compile(Instructions *ins, const char *output_name)
@@ -19,7 +116,8 @@ int compile(Instructions *ins, const char *output_name)
     fprintf(stderr, "COMPILATION ERROR: couldn't compile the program to the assembly representation.\n");
     return FAIL;
   }
-  generate_assembly(f, ins);
+  if (!generate_assembly(f, ins)) return FAIL;
   fclose(f);
+  if (!compile_assembly(output_name)) return FAIL;
   return SUCCESS;
 }

@@ -92,7 +92,7 @@ int interpret(Instructions *ins)
       } break;
 
       default: {
-        fprintf(stderr, "Reached the unrechable end of interpretation.\n");
+        fprintf(stderr, "Reached the unreachable end of interpretation.\n");
         return FAIL;
       } break;
     }

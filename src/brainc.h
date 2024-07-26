@@ -7,9 +7,11 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define DA_INIT_CAPACITY 64
-#define SUCCESS          0
-#define FAIL             1
+#define MAX_BYTES           1024
+#define MAX_OUTPUT_FILENAME 1024
+#define DA_INIT_CAPACITY    64
+#define SUCCESS             0
+#define FAIL                1
 
 #define da_heap_alloc(type) (type *)calloc(1, sizeof(type));
 
