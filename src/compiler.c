@@ -1,7 +1,12 @@
 #include "compiler.h"
 
-bool generate_assembly(FILE *f, Instructions *ins)
+bool generate_assembly(Instructions *ins, const char *filename)
 {
+  FILE *f = fopen(filename, "w");
+  if (f == NULL) {
+    fprintf(stderr, "COMPILATION ERROR: couldn't generate assembly with %s filename.\n", filename);
+    return false;
+  }
   fprintf(f, "section .data\n");
   fprintf(f, "  bytesarr times %d db 0\n", MAX_BYTES);
   fprintf(f, "  pos dd 0\n");
@@ -87,12 +92,13 @@ bool generate_assembly(FILE *f, Instructions *ins)
   fprintf(f, "  mov rax, 60\n");
   fprintf(f, "  mov rdi, 0\n");
   fprintf(f, "  syscall\n");
+  fclose(f);
   return true;
 }
 
 bool compile_assembly(const char *output_name)
 {
-  if (system("nasm -f ELF64 -g genasm.asm -o genasm.o") != 0) {
+  if (system("nasm -f ELF64 -g source.asm -o source.o") != 0) {
     fprintf(stderr, "COMPILATION ERROR: couldn't produce the object file.\n");
     return false;
   }
@@ -101,7 +107,7 @@ bool compile_assembly(const char *output_name)
     return false;
   }
   char ld[MAX_OUTPUT_FILENAME];
-  sprintf(ld, "ld genasm.o -o %s", output_name);
+  sprintf(ld, "ld source.o -o %s", output_name);
   if (system(ld) != 0) {
     fprintf(stderr, "COMPILATION ERROR: couldn't link the object file.\n");
     return false;
@@ -111,13 +117,7 @@ bool compile_assembly(const char *output_name)
 
 int compile(Instructions *ins, const char *output_name)
 {
-  FILE *f = fopen("genasm.asm", "w");
-  if (f == NULL) {
-    fprintf(stderr, "COMPILATION ERROR: couldn't compile the program to the assembly representation.\n");
-    return FAIL;
-  }
-  if (!generate_assembly(f, ins)) return FAIL;
-  fclose(f);
+  if (!generate_assembly(ins, "source.asm")) return FAIL;
   if (!compile_assembly(output_name)) return FAIL;
   return SUCCESS;
 }

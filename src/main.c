@@ -37,7 +37,8 @@ void usage(char *name)
   printf("usage: %s <filename.bf> | -i <filename.bf>\n", name);
   printf("  -i | --interpret: use interpretation only mode to execute the program.\n");
   printf("  -c | --compile: compile the source code to x86-64 ELF64 executable.\n");
-  printf("  -o | --output: output the compiled file. Used only with `-c`\n");
+  printf("  -o | --output: output the compiled file. Used with `-c` or `-S`.\n");
+  printf("  -S: output compiler generated assembly.\n");
 }
 
 int main(int argc, char **argv)
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
     arg = next_arg(&args);
     char *source = read_entire_file(arg);
     if (source == NULL) {
-      fprintf(stderr, "INTERNAL ERROR: Couldn't read the file %s.\n", arg);
+      fprintf(stderr, "INTERNAL ERROR: couldn't read the file %s.\n", arg);
       return 1;
     }
     Instructions *ins = translate_program(source);
@@ -78,7 +79,10 @@ int main(int argc, char **argv)
     }
     arg = next_arg(&args);
     char *source = read_entire_file(arg);
-    Instructions *ins = translate_program(source);
+    if (source == NULL) {
+      fprintf(stderr, "INTERNAL ERROR: couldn't read the file %s.\n", arg);
+      return 1;
+    }
     char *output_name;
     if (args.argc - 1 == args.index) output_name = "a.out";
     else {
@@ -95,11 +99,43 @@ int main(int argc, char **argv)
       }
       output_name = next_arg(&args);
     }
+    Instructions *ins = translate_program(source);
     exit(compile(ins, output_name));
+  }
+  else if (strcmp(arg, "-S") == 0) {
+    if (args.argc - 1 == args.index) {
+      fprintf(stderr, "ERROR: no source file provided after `-S` flag.\n");
+      usage(args.argv[0]);
+      return 1;
+    }
+    arg = next_arg(&args);
+    char *source = read_entire_file(arg);
+    if (source == NULL) {
+      fprintf(stderr, "INTERNAL ERROR: couldn't read the file %s.\n", arg);
+      return 1;
+    }
+    char *output_name;
+    if (args.argc - 1 == args.index) output_name = "source.asm";
+    else {
+      arg = next_arg(&args);
+      if (strcmp(arg, "-o") != 0 && strcmp(arg, "--output") != 0) {
+        fprintf(stderr, "ERROR: unknown flag `%s` after `-S` flag.", arg);
+        usage(args.argv[0]);
+        return 1;
+      }
+      if (args.argc - 1 == args.index) {
+        fprintf(stderr, "ERROR: no output name specified after `-o` flag.\n");
+        usage(args.argv[0]);
+        return 1;
+      }
+      output_name = next_arg(&args);
+    }
+    Instructions *ins = translate_program(source);
+    generate_assembly(ins, output_name);
   }
   else {
     if (strcmp(arg, "-o") == 0 || strcmp(arg, "--output") == 0) {
-      fprintf(stderr, "ERROR: `-o` flag used without pairing `-c` flag.\n");
+      fprintf(stderr, "ERROR: `-o` flag used without pairing `-c` or `-S` flag.\n");
       usage(args.argv[0]);
       return 1;
     }
