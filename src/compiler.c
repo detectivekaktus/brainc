@@ -1,5 +1,11 @@
 #include "compiler.h"
 
+void free_compiler_memory(Instructions *ins)
+{
+  da_heap_free(ins);
+  ins = NULL;
+}
+
 bool generate_assembly(Instructions *ins, const char *filename)
 {
   FILE *f = fopen(filename, "w");
@@ -93,6 +99,7 @@ bool generate_assembly(Instructions *ins, const char *filename)
   fprintf(f, "  mov rdi, 0\n");
   fprintf(f, "  syscall\n");
   fclose(f);
+  free_compiler_memory(ins);
   return true;
 }
 
