@@ -22,7 +22,6 @@ bool generate_assembly(Instructions *ins, const char *filename)
 
   fprintf(f, "_start:\n");
   int ip = 0;
-  int bytesarr_pos = 0;
   bool res = false;
   Instruction in = ins->items[ip];
   while (in.kind != END_OF_FILE) {
@@ -64,12 +63,6 @@ bool generate_assembly(Instructions *ins, const char *filename)
       } break;
 
       case SHIFT_RIGHT: {
-        bytesarr_pos += in.value;
-        if (bytesarr_pos >= MAX_BYTES) {
-          fprintf(stderr, "COMPILATION ERROR: Bytes overflow. Reached the right bytes limit %d.\n", MAX_BYTES);
-          remove(filename);
-          goto out;
-        }
         fprintf(f, "  mov ebx, dword [pos]\n");
         fprintf(f, "  add ebx, %d\n", in.value);
         fprintf(f, "  mov [pos], ebx\n");
@@ -77,12 +70,6 @@ bool generate_assembly(Instructions *ins, const char *filename)
       } break;
 
       case SHIFT_LEFT: {
-        bytesarr_pos -= in.value;
-        if (bytesarr_pos < 0) {
-          fprintf(stderr, "COMPILATION ERROR: Bytes underflow. Can't shift left from position 0.\n");
-          remove(filename);
-          goto out;
-        }
         fprintf(f, "  mov ebx, dword [pos]\n");
         fprintf(f, "  sub ebx, %d\n", in.value);
         fprintf(f, "  mov [pos], ebx\n");
@@ -109,7 +96,7 @@ bool generate_assembly(Instructions *ins, const char *filename)
 
       default: {
         fprintf(stderr, "Reached the unreachable end of compilation.\n");
-        return false;
+        res = false;
       } break;
     }
   }
@@ -117,7 +104,6 @@ bool generate_assembly(Instructions *ins, const char *filename)
   fprintf(f, "  mov rdi, 0\n");
   fprintf(f, "  syscall\n");
   res = true;
-out:
   fclose(f);
   free_compiler_memory(ins);
   return res;
