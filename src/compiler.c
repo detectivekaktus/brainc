@@ -40,7 +40,14 @@ bool generate_assembly(Instructions *ins, const char *filename)
       } break;
 
       case INPUT: {
-        assert(0 && "Input compilation is not implemented.\n");
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        for (int i = 0; i < in.value; i++) {
+          fprintf(f, "  mov rax, 0\n");
+          fprintf(f, "  mov rdi, 0\n");
+          fprintf(f, "  lea rsi, [bytesarr + ebx]\n");
+          fprintf(f, "  mov rdx, 1\n");
+          fprintf(f, "  syscall\n");
+        }
         in = ins->items[++ip];
       } break;
 
