@@ -3,18 +3,13 @@
 #include "lexer.h"
 #include "compiler.h"
 
-typedef struct {
-  int argc;
-  char **argv;
-  int index;
-} Args;
-
 char *next_arg(Args *args)
 {
   return args->argv[++args->index];
 }
 
-char *read_entire_file(char *filename) {
+char *read_entire_file(char *filename)
+{
   FILE *file = fopen(filename, "r");
   if (file == NULL) return NULL;
   fseek(file, 0, SEEK_END);
@@ -35,6 +30,13 @@ char *read_entire_file(char *filename) {
 void usage(char *name)
 {
   printf("usage: %s <filename.bf> | -i <filename.bf>\n", name);
+  help();
+}
+
+void help(void)
+{
+  printf("  -h | --help: outputs this prompt.\n");
+  printf("  -v | --version: outputs the version of the compiler.\n");
   printf("  -i | --interpret: use interpretation only mode to execute the program.\n");
   printf("  -c | --compile: compile the source code to x86-64 ELF64 executable.\n");
   printf("  -o | --output: output the compiled file. Used with `-c` or `-S`.\n");
@@ -132,6 +134,14 @@ int main(int argc, char **argv)
     }
     Instructions *ins = translate_program(source);
     generate_assembly(ins, output_name);
+  }
+  else if (strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0) {
+    help();
+  }
+  else if (strcmp(arg, "-v") == 0 || strcmp(arg, "--version") == 0) {
+    printf("brainc v.1.0\n");
+    printf("Copyright (C) Artiom Astashonak.\n");
+    printf("Find the source code at https://github.com/detectivekaktus/brainc.\n");
   }
   else {
     if (strcmp(arg, "-o") == 0 || strcmp(arg, "--output") == 0) {

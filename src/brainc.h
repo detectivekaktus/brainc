@@ -13,6 +13,12 @@
 #define SUCCESS             0
 #define FAIL                1
 
+typedef struct {
+  int argc;
+  char **argv;
+  int index;
+} Args;
+
 #define da_heap_alloc(type) (type *)calloc(1, sizeof(type));
 
 #define da_append(da, item)                                                         \
@@ -31,5 +37,11 @@
     free((da)->items);                                                              \
     free(da);                                                                       \
   } while (0)
+
+int main(int argc, char **argv);
+char *next_arg(Args *args);
+char *read_entire_file(char *filename);
+void usage(char *name);
+void help(void);
 
 #endif
