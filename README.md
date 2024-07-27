@@ -1,6 +1,4 @@
 # brainc
-***THIS PROJECT IS IN AN EARLY STAGE OF DEVELOPMENT. DON'T EXPECT TOO MUCH!***
-
 Brainc is a toolset that allows you to execute brainfuck code efficiently due to its implementation written in pure C. For compilation, the toolset offers to its user only the x86-64 processor architechture; the files compiled are in *ELF64* format.
 
 ## Compilation
