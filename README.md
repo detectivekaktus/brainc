@@ -25,5 +25,9 @@ The toolset has the following flags:
 ## Examples
 You can find examples in the `examples` directory and execute them with the toolset.
 
+Links to the examples:
+- Hello world: [Wikipedia](https://en.wikipedia.org/wiki/Brainfuck)
+- Calculator: [Dougaak/Brainfuck-Calculator](https://github.com/Dougaak/Brainfuck-Calculator/tree/master)
+
 ## Contribution
 Make sure to read the [CONTRIBUTING.md](https://github.com/detectivekaktus/brainc/blob/master/CONTRIBUTING.md) file before making pull requests to this repository.

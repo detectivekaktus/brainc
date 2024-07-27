@@ -41,3 +41,10 @@ add byte [array + ebx], 5
 mov ebx, dword [pos]
 add ebx, 5
 mov [pos], ebx
+
+; To test if a value in the register is zero or not, it can be used the `test`
+; instruction which sets up the flags and allows you to jump with jz and jnz
+; instruction to different labels in the program.
+mov rax, 1
+test rax, rax
+jnz label1
