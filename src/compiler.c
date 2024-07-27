@@ -35,7 +35,7 @@ bool generate_assembly(Instructions *ins, const char *filename)
 
       case DECREMENT: {
         fprintf(f, "  mov ebx, dword [pos]\n");
-        fprintf(f, "  sub byte [bytesarr + ebx], %d", in.value);
+        fprintf(f, "  sub byte [bytesarr + ebx], %d\n", in.value);
         in = ins->items[++ip];
       } break;
 
@@ -90,12 +90,20 @@ bool generate_assembly(Instructions *ins, const char *filename)
       } break;
 
       case IF_ZERO: {
-        assert(0 && "If zero `[` compilation is not implemented.\n");
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  mov al, byte [bytesarr + ebx]\n");
+        fprintf(f, "  test al, al\n");
+        fprintf(f, "  jz addr_%d\n", in.value);
+        fprintf(f, "addr_%d:\n", ip + 1);
         in = ins->items[++ip];
       } break;
 
      case IF_NZERO: {
-        assert(0 && "If non zero `]` compilation is not implemented.\n");
+        fprintf(f, "  mov ebx, dword [pos]\n");
+        fprintf(f, "  mov al, byte [bytesarr + ebx]\n");
+        fprintf(f, "  test al, al\n");
+        fprintf(f, "  jnz addr_%d\n", in.value);
+        fprintf(f, "addr_%d:\n", ip + 1);
         in = ins->items[++ip];
       } break;
 
@@ -126,7 +134,7 @@ bool compile_assembly(const char *output_name)
     return false;
   }
   char ld[MAX_OUTPUT_FILENAME];
-  sprintf(ld, "ld source.o -o %s", output_name);
+  sprintf(ld, "ld source.o -O3 -o %s", output_name);
   if (system(ld) != 0) {
     fprintf(stderr, "COMPILATION ERROR: couldn't link the object file.\n");
     return false;
