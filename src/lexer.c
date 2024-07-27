@@ -13,6 +13,12 @@ char lexer_next(Lexer *lexer)
   return lexer->content[lexer->index++];
 }
 
+void destroy_lexer_memory(char *source, Addresses *addrs)
+{
+  free(source);
+  da_free(addrs);
+}
+
 Instructions *translate_program(char *source)
 {
   Lexer lexer = {
@@ -82,6 +88,6 @@ Instructions *translate_program(char *source)
     .value = 0
   };
   da_append(ins, eofin);
-  free(source);
+  destroy_lexer_memory(source, &addrs);
   return ins;
 }

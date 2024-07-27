@@ -39,6 +39,7 @@ typedef struct {
 
 bool is_valid_command(char c);
 char lexer_next(Lexer *lexer);
+void destroy_lexer_memory(char *source, Addresses *addrs);
 Instructions *translate_program(char *source);
 
 #endif
